@@ -167,6 +167,7 @@ def main():
             new_password=dict(no_log=True),
             roleid=dict(),
             bootdevice=dict(),
+            firmware_uri=dict(),
         ),
         supports_check_mode=False
     )
@@ -229,6 +230,11 @@ def main():
                 result = rf_utils.manage_system_power(command)
             elif command == "SetOneTimeBoot":
                 result = rf_utils.set_one_time_boot_device(module.params['bootdevice'])
+            elif command == "UpdateFirmware":
+                result = rf_utils._find_updateservice_resource(rf_uri)
+                if result['ret'] is False:
+                    module.fail_json(msg=to_native(result['msg']))
+                result = rf_utils.update_firmware_simple(module.params['firmware_uri'])
 
     elif category == "Manager":
         MANAGER_COMMANDS = {
